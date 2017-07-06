@@ -1,7 +1,6 @@
 #include <aglet/GLContext.h>
 
 #include <gtest/gtest.h>
-#include <gmock/gmock.h>
 
 #include <iostream>
 
@@ -80,7 +79,9 @@ public:
     {
         return texId;
     }
+    
 protected:
+    
     GLuint texId;
 };
 
@@ -88,7 +89,7 @@ int gauze_main(int argc, char **argv)
 {
     try
     {
-        ::testing::InitGoogleMock(&argc, argv);
+        ::testing::InitGoogleTest(&argc, argv);
         auto code = RUN_ALL_TESTS();
         return code;
     }
