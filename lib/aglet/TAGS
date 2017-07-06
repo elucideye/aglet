@@ -1,97 +1,0 @@
-
-CMakeLists.txt,24
-hunter_add_package(1,0
-
-GLContext.h,1165
-#define __aglet_GLContext_h__12,289
-class GLContext21,417
-    enum ContextKindGLContext::ContextKind28,625
-        kAuto,GLContext::ContextKind::kAuto30,652
-        kGLFW,GLContext::ContextKind::kGLFW31,713
-        kIOS,GLContext::ContextKind::kIOS32,765
-        kAndroid,GLContext::ContextKind::kAndroid33,802
-        kCountGLContext::ContextKind::kCount34,843
-    struct GeometryGLContext::Geometry37,866
-    GLContext(GLContext::GLContext47,1043
-    ~GLContext(GLContext::~GLContext48,1062
-    GLContext(GLContext::GLContext50,1083
-    virtual void operator()(GLContext::operator()53,1188
-    virtual void setCursorCallback(GLContext::setCursorCallback55,1238
-    virtual void setCursorVisibility(GLContext::setCursorVisibility56,1308
-    virtual void setCursor(GLContext::setCursor57,1359
-    virtual void getCursor(GLContext::getCursor58,1409
-    virtual void setWait(GLContext::setWait59,1461
-    virtual void resize(GLContext::resize61,1541
-    virtual void operator()(GLContext::operator()62,1591
-    Geometry& getGeometry(GLContext::getGeometry64,1657
-    const Geometry& getGeometry(GLContext::getGeometry65,1708
-
-GLContextAndroid.cpp,315
-GLContextAndroid::GLContextAndroid(15,273
-GLContextAndroid::~GLContextAndroid(54,1554
-GLContextAndroid::operator bool(GLContextAndroid::operator bool66,1878
-bool GLContextAndroid::hasDisplay(72,1974
-void GLContextAndroid::resize(77,2039
-void GLContextAndroid::operator()(GLContextAndroid::operator()82,2109
-
-GLContextAndroid.h,146
-#define __aglet_GLContextAndroid_h__11,234
-struct GLContextAndroid 26,485
-    virtual operator bool(31,613
-    virtual bool hasDisplay(34,698
-
-GLContextIOS.h,137
-#define __aglet_GLContextIOS_h__11,222
-class GLContextIOS 19,318
-    virtual operator bool(25,408
-    virtual bool hasDisplay(28,493
-
-GLContextIOS.mm,345
-struct GLContextIOS::Impl17,306
-    Impl(GLContextIOS::Impl::Impl19,334
-GLContextIOS::GLContextIOS(28,519
-GLContextIOS::~GLContextIOS(33,598
-GLContextIOS::operator bool(GLContextIOS::operator bool38,638
-bool GLContextIOS::hasDisplay(44,723
-void GLContextIOS::resize(49,784
-void GLContextIOS::operator()(GLContextIOS::operator()54,850
-
-GLFWContext.cpp,838
-struct GLFWContextPool20,314
-    void alloc(GLFWContextPool::alloc24,372
-    void erase(GLFWContextPool::erase47,959
-static GLFWContextPool glfwPool;71,1556
-void GLFWContext::alloc(75,1673
-GLFWContext::GLFWContext(107,2450
-GLFWContext::~GLFWContext(113,2647
-void GLFWContext::operator()(GLFWContext::operator()118,2706
-GLFWContext::operator bool(GLFWContext::operator bool123,2781
-void GLFWContext::getCursor(128,2856
-void GLFWContext::setCursor(133,2952
-void GLFWContext::setCursorVisibility(138,3044
-static void mouse_callback(143,3192
-void GLFWContext::setCursorCallback(153,3418
-bool GLFWContext::hasDisplay(161,3599
-void GLFWContext::resize(166,3663
-void GLFWContext::operator()(GLFWContext::operator()173,3827
-void GLFWContext::framebufferSizeCallback(192,4204
-static void framebuffer_size_callback(211,5048
-
-GLFWContext.h,179
-#define __aglet_GLFWContext_h__11,225
-class GLFWContext 28,518
-    virtual void setWait(GLFWContext::setWait42,974
-    GLFWwindow* getContext(GLFWContext::getContext47,1174
-
-aglet.h,279
-#define __aglet_aglet_h__12,276
-#define AGLET_BEGIN 15,323
-#define AGLET_END 16,361
-#  define AGLET_MSVC 27,658
-#    define AGLET_IOS 33,872
-#    define AGLET_OSX 38,989
-#  define AGLET_ANDROID 43,1122
-#  define GL_GLEXT_PROTOTYPES 45,1216
-#  define AGLET_LINUX 49,1315
-
-GLContext.cpp,0
