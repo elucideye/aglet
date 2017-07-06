@@ -1,0 +1,89 @@
+hunter_add_package(Boost)
+find_package(Boost CONFIG REQUIRED)
+
+set(aglet_libs Boost::boost)
+set(aglet_defs "")
+set(aglet_srcs
+  aglet.h
+  GLContext.h
+  GLContext.cpp)
+
+if(ANDROID)
+  find_library(log-lib log)
+  find_library(android-lib android)
+  find_library(EGL-lib EGL)
+  find_library(GLESv2-lib GLESv2)
+  list(APPEND aglet_srcs GLContextAndroid.cpp GLContextAndroid.h)
+  list(APPEND aglet_defs AGLET_ANDROID=1)  
+  list(APPEND aglet_libs ${log-lib} ${android-lib} ${EGL-lib} ${GLESv2-lib})
+endif()
+
+if(IOS)
+  list(APPEND aglet_srcs GLContextIOS.mm GLContextIOS.h)
+  list(APPEND aglet_defs AGLET_IOS=1)  
+  list(APPEND aglet_libs "-framework OpenGLES")
+endif()
+
+if(NOT ${AGLET_IS_MOBILE})
+  hunter_add_package(glfw)
+  find_package(glfw3 REQUIRED)
+  
+  list(APPEND aglet_srcs GLFWContext.cpp GLFWContext.h)
+  list(APPEND aglet_defs AGLET_HAS_GLFW=1)    
+  list(APPEND aglet_libs glfw)
+endif()
+
+add_library(aglet ${aglet_srcs})
+target_link_libraries(aglet PUBLIC ${aglet_libs})
+target_compile_definitions(aglet PUBLIC ${aglet_defs})
+target_include_directories(aglet PUBLIC "$<BUILD_INTERFACE:${AGLET_INCLUDE_DIRECTORIES}>")
+set_property(TARGET aglet PROPERTY FOLDER "libs/aglet")
+
+####
+# Installation (https://github.com/forexample/package-example)
+
+set(config_install_dir "lib/cmake/${PROJECT_NAME}")
+set(generated_dir "${CMAKE_CURRENT_BINARY_DIR}/generated")
+set(version_config "${generated_dir}/${PROJECT_NAME}ConfigVersion.cmake")
+set(project_config "${generated_dir}/${PROJECT_NAME}Config.cmake")
+set(TARGETS_EXPORT_NAME "${PROJECT_NAME}Targets")
+set(namespace "${PROJECT_NAME}::")
+
+include(CMakePackageConfigHelpers)
+
+# Note: PROJECT_VERSION is used as a VERSION
+write_basic_package_version_file(
+    "${version_config}" COMPATIBILITY SameMajorVersion
+)
+
+# Use variables:
+#   * TARGETS_EXPORT_NAME
+#   * PROJECT_NAME
+configure_package_config_file(
+    "${PROJECT_SOURCE_DIR}/cmake/Config.cmake.in"
+    "${project_config}"
+    INSTALL_DESTINATION "${config_install_dir}"
+)
+
+install(
+  FILES "${project_config}" "${version_config}"
+  DESTINATION "${config_install_dir}"
+  )
+
+install(
+  EXPORT "${TARGETS_EXPORT_NAME}"
+  NAMESPACE "${namespace}"
+  DESTINATION "${config_install_dir}"
+  )
+
+install(
+    TARGETS aglet
+    EXPORT "${TARGETS_EXPORT_NAME}"
+    LIBRARY DESTINATION "lib"
+    ARCHIVE DESTINATION "lib"
+    RUNTIME DESTINATION "bin"
+    INCLUDES DESTINATION "include"
+    )
+
+
+  
