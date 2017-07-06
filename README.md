@@ -1,8 +1,11 @@
----
 ## ag·let
+
   *noun*
+  
   noun: aglet; plural noun: aglets
+  
     a metal or plastic tube fixed tightly around each end of a shoelace.
+    
 ---
 
 A tiny cross platform library for (headless) opengl context creation.  This was initially created to replace boilerplate code for OpenGL GPGPU unit tests.
