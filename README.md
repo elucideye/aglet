@@ -22,6 +22,5 @@ A tiny cross platform library for (headless) opengl context creation.  This was 
 [travis_builds]: https://travis-ci.com/elucideye/aglet
 
 [appveyor_status]: https://ci.appveyor.com/api/projects/status/suaipbrqiicq3td6/branch/master?svg=true
-[appveyor_builds]: https://ci.appveyor.com/api/projects/elucideye/aglet/branch/master
-
-
+[appveyor_builds]: https://ci.appveyor.com/project/elucideye/aglet/branch/master
+                   
