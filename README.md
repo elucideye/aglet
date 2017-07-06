@@ -1,7 +1,17 @@
 # aglet
-Tiny cross platform (headless) opengl-context creation.
+Tiny cross platform library for (headless) opengl context creation.
 
-This library supports cross platform opengl gpgpu unit tests on desktop and mobile devices.
+---
+
+## ag·let
+
+  *noun*
+  noun: aglet; plural noun: aglets
+
+    a metal or plastic tube fixed tightly around each end of a shoelace.
+---
+
+This was initially created to replace boilerplate code for OpenGL GPGPU unit tests.
 
 [![License (3-Clause BSD)](https://img.shields.io/badge/license-BSD%203--Clause-brightgreen.svg?style=flat-square)](http://opensource.org/licenses/BSD-3-Clause)
 [![HUNTER](https://img.shields.io/badge/hunter-v0.19.0-blue.svg)](http://github.com/ruslo/hunter)
