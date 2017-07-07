@@ -8,16 +8,6 @@ environment:
     - TOOLCHAIN: "vs-14-2015"
       CONFIG: "Debug"
 
-    - TOOLCHAIN: "vs-9-2008"
-      CONFIG: "Release"
-    - TOOLCHAIN: "vs-9-2008"
-      CONFIG: "Debug"
-
-    - TOOLCHAIN: "mingw"
-      CONFIG: "Release"
-    - TOOLCHAIN: "mingw"
-      CONFIG: "Debug"
-
 install:
   # Python 3
   - cmd: set PATH=C:\Python34-x64;C:\Python34-x64\Scripts;%PATH%
