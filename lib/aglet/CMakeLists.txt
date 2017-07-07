@@ -1,7 +1,4 @@
-hunter_add_package(Boost)
-find_package(Boost CONFIG REQUIRED)
-
-set(aglet_libs Boost::boost)
+set(aglet_libs "")
 set(aglet_defs "")
 set(aglet_srcs
   aglet.h
