@@ -21,7 +21,10 @@ endif()
 if(IOS)
   list(APPEND aglet_srcs GLContextIOS.mm GLContextIOS.h)
   list(APPEND aglet_defs AGLET_IOS=1)  
-  list(APPEND aglet_libs "-framework OpenGLES")
+  list(APPEND aglet_libs
+    "-framework OpenGLES"
+    "-framework Foundation"
+    )
 endif()
 
 if(MSVC)
