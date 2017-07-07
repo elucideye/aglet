@@ -4,9 +4,6 @@ cmake_minimum_required(VERSION 3.3) # IN_LIST
 
 include(CMakeFindDependencyMacro)
 
-#find_dependency(Boost)
-find_package(Boost CONFIG REQUIRED system)
-
 if (NOT @AGLET_IS_MOBILE@)
   find_dependency(glfw3)
 endif()
