@@ -8,11 +8,19 @@
 */
 
 #include "aglet/GLContextIOS.h"
-#include "aglet/core/make_unique.h"
 
 #import <UIKit/UIKit.h>
 
+#include <memory>
+
 AGLET_BEGIN
+
+// Workaround for c++11 targets
+template <typename Value, typename... Arguments>
+std::unique_ptr<Value> make_unique(Arguments&&... arguments_for_constructor)
+{
+    return std::unique_ptr<Value>(new Value(std::forward<Arguments>(arguments_for_constructor)...));
+}
 
 struct GLContextIOS::Impl
 {
@@ -27,7 +35,7 @@ struct GLContextIOS::Impl
 
 GLContextIOS::GLContextIOS()
 {
-    impl = aglet::core::make_unique<Impl>();
+    impl = make_unique<Impl>();
 }
 
 GLContextIOS::~GLContextIOS()
