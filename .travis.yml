@@ -92,7 +92,7 @@ script:
     --config ${CONFIG}
     --verbose
     --fwd HUNTER_CONFIGURATION_TYPES=${CONFIG}
-    AGLET_BUILD_TESTS=ON
+    AGLET_BUILD_TESTS=OFF
     --discard 10
     --tail 100
 

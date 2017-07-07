@@ -8,7 +8,7 @@ HunterGate(
 
 project(aglet VERSION 0.1)
 
-option(AGLET_BUILD_TESTS "Build tests" ON)
+option(AGLET_BUILD_TESTS "Build tests" OFF)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
