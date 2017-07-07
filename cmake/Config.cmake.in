@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.3) # IN_LIST
 
 @PACKAGE_INIT@
 
+include(CMakeFindDependencyMacro)
+
 #find_dependency(Boost)
 find_package(Boost CONFIG REQUIRED system)
 
