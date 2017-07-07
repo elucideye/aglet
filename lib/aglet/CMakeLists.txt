@@ -24,6 +24,16 @@ if(IOS)
   list(APPEND aglet_libs "-framework OpenGLES")
 endif()
 
+if(MSVC)
+  # ogles_gpgpu/platform/opengl/gl_includes.h: #include <gl/glew.h>
+  hunter_add_package(glew)
+  find_package(glew CONFIG REQUIRED)
+  
+  list(APPEND aglet_libs glew::glew)
+  list(APPEND aglet_defs PUBLIC NOMINMAX) # avoid std::{min,max} conflicts
+  list(APPEND aglet_defs PUBLIC _USE_MATH_DEFINES) # M_PI, etc
+endif()
+
 if(NOT ${AGLET_IS_MOBILE})
   hunter_add_package(glfw)
   find_package(glfw3 REQUIRED)
