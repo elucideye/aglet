@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.3) # IN_LIST
-
 @PACKAGE_INIT@
 
 include(CMakeFindDependencyMacro)
@@ -9,7 +7,7 @@ if (NOT @AGLET_IS_MOBILE@)
 endif()
 
 if (@MSVC@)
-  find_dependency(glew)
+  find_dependency(glew CONFIG)
 endif()
 
 include("${CMAKE_CURRENT_LIST_DIR}/@TARGETS_EXPORT_NAME@.cmake")
