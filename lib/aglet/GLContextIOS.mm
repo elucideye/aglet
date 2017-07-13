@@ -8,6 +8,7 @@
 */
 
 #include "aglet/GLContextIOS.h"
+#include "aglet/aglet_assert.h"
 
 #import <UIKit/UIKit.h>
 
@@ -27,7 +28,16 @@ struct GLContextIOS::Impl
     Impl()
     {
         egl = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
-        [EAGLContext setCurrentContext:egl];
+        throw_assert(egl, "EAGLContexfft initWithAPI");
+
+        auto status = [EAGLContext setCurrentContext:egl];
+        throw_assert(status, "EAGLContext setCurrentContext");
+    }
+
+    void operator()()
+    {
+        auto status = [EAGLContext setCurrentContext:egl];
+        throw_assert(status, "EAGLContext setCurrentContext");        
     }
     
     EAGLContext *egl = nullptr;
@@ -46,6 +56,14 @@ GLContextIOS::~GLContextIOS()
 GLContextIOS::operator bool() const
 {
     return (impl && impl->egl);
+}
+
+void GLContextIOS::operator()()
+{
+    if(impl)
+    {
+        (*impl)();
+    }
 }
 
 // Display:

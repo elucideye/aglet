@@ -2,8 +2,10 @@ set(aglet_libs "")
 set(aglet_defs "")
 set(aglet_srcs
   aglet.h
+  aglet_assert.h
   GLContext.h
-  GLContext.cpp)
+  GLContext.cpp
+  )
 
 if(ANDROID)
   find_library(log-lib log)
