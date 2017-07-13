@@ -52,10 +52,10 @@ public:
     virtual operator bool() const = 0;
     virtual void operator()() {} // make current
 
-    virtual void setCursorCallback(const CursorDelegate &callback) {}
+    virtual void setCursorCallback(const CursorDelegate& callback) {}
     virtual void setCursorVisibility(bool flag) {}
     virtual void setCursor(double x, double y) {}
-    virtual void getCursor(double &x, double &y) {}
+    virtual void getCursor(double& x, double& y) {}
     virtual void setWait(bool flag) {}
     virtual bool hasDisplay() const = 0;
     virtual void resize(int width, int height) {}
@@ -65,7 +65,7 @@ public:
     const Geometry& getGeometry() const { return m_geometry; }
 
     Geometry m_geometry;
-    
+
     CursorDelegate cursorCallback;
 
     // Create context (w/ window if name is specified):

@@ -1,13 +1,15 @@
 /*!
   @file   GLContextAndroid.cpp
   @author David Hirvonen
-  @brief  Implementation of minimal "hidden" GLFW based OpenGL context.
+  @brief  Implementation of minimal "hidden" OpenGL context for Android.
 
   \copyright Copyright 2017 Elucideye, Inc. All rights reserved.
 
 */
 
 #include "aglet/GLContextAndroid.h"
+#include "aglet/aglet_assert.h"
+
 #include <iostream>
 
 AGLET_BEGIN
@@ -44,28 +46,59 @@ GLContextAndroid::GLContextAndroid(int width, int height)
     EGLint numConfigs;
 
     eglDisp = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+    throw_assert((eglGetError() == EGL_SUCCESS), "GLContextAndroid::GLContextAndroid() : eglGetDisplay()");
+    throw_assert((eglDisp != EGL_NO_DISPLAY), "GLContextAndroid::GLContextAndroid() : eglGetDisplay()");
+
     eglInitialize(eglDisp, &eglMajVers, &eglMinVers);
+    throw_assert((eglGetError() == EGL_SUCCESS), "GLContextAndroid::GLContextAndroid() : eglInitialize()");
+
     eglChooseConfig(eglDisp, confAttr, &eglConf, 1, &numConfigs);
-    eglCtx = eglCreateContext(eglDisp, eglConf, EGL_NO_CONTEXT, ctxAttr);
+    throw_assert((eglGetError() == EGL_SUCCESS), "GLContextAndroid::GLContextAndroid() : eglChooseConfig()");
+
     eglSurface = eglCreatePbufferSurface(eglDisp, eglConf, surfaceAttr);
+    throw_assert((eglGetError() == EGL_SUCCESS), "GLContextAndroid::GLContextAndroid() : eglCreatePbufferSurface()");
+    throw_assert((eglSurface != EGL_NO_SURFACE), "GLContextAndroid::GLContextAndroid() : eglCreatePbufferSurface()");
+
+    eglCtx = eglCreateContext(eglDisp, eglConf, EGL_NO_CONTEXT, ctxAttr);
+    throw_assert((EGL_SUCCESS == eglGetError()), "GLContextAndroid::GLContextAndroid() : eglCreateContext()");
+    throw_assert((eglCtx != EGL_NO_CONTEXT), "GLContextAndroid::GLContextAndroid() : eglCreateContext()");
+
     eglMakeCurrent(eglDisp, eglSurface, eglSurface, eglCtx);
+    throw_assert((eglGetError() == EGL_SUCCESS), "GLContextAndroid::GLContextAndroid() : eglMakeCurrent()");
 }
 
 GLContextAndroid::~GLContextAndroid()
 {
-    eglMakeCurrent(eglDisp, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
-    eglDestroyContext(eglDisp, eglCtx);
-    eglDestroySurface(eglDisp, eglSurface);
-    eglTerminate(eglDisp);
+    if (eglCtx != EGL_NO_CONTEXT)
+    {
+        eglDestroyContext(eglDisp, eglCtx);
+        eglCtx = EGL_NO_CONTEXT;
+    }
 
-    eglDisp = EGL_NO_DISPLAY;
-    eglSurface = EGL_NO_SURFACE;
-    eglCtx = EGL_NO_CONTEXT;
+    if (eglSurface != EGL_NO_SURFACE)
+    {
+        eglDestroySurface(eglDisp, eglSurface);
+        eglSurface = EGL_NO_SURFACE;
+    }
+
+    if (eglDisp != EGL_NO_DISPLAY)
+    {
+        eglMakeCurrent(eglDisp, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+        eglTerminate(eglDisp);
+        eglDisp = EGL_NO_DISPLAY;
+    }
 }
 
 GLContextAndroid::operator bool() const
 {
     return (eglCtx != EGL_NO_CONTEXT);
+}
+
+void GLContextAndroid::operator()()
+{
+    auto status = eglMakeCurrent(eglDisp, eglSurface, eglSurface, eglCtx);
+    throw_assert(status, "GLContextAndroid::operator()() : eglMakeCurrent()");
+    throw_assert(eglGetError() == EGL_SUCCESS, "GLContextAndroid::operator()() : eglMakeCurrent()");
 }
 
 // Display:
@@ -81,7 +114,9 @@ void GLContextAndroid::resize(int width, int height)
 
 void GLContextAndroid::operator()(std::function<bool(void)>& f)
 {
-    while (f()) {}
+    while (f())
+    {
+    }
 }
 
 AGLET_END

@@ -29,11 +29,11 @@ struct GLContextAndroid : public GLContext
     ~GLContextAndroid();
 
     virtual operator bool() const;
-    virtual void operator()() {} // make current
+    virtual void operator()();
 
     virtual bool hasDisplay() const;
     virtual void resize(int width, int height);
-    virtual void operator()(std::function<bool(void)>& f);    
+    virtual void operator()(std::function<bool(void)>& f);
 
     EGLConfig eglConf;
     EGLSurface eglSurface = EGL_NO_SURFACE;

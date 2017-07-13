@@ -11,22 +11,22 @@ public:
     {
         glGenFramebuffers(1, &id);
     }
-    
+
     ~GLFrameBufferObject()
     {
         glDeleteFramebuffers(1, &id);
     }
-    
+
     void bind()
     {
-       glBindFramebuffer(GL_FRAMEBUFFER, id);
+        glBindFramebuffer(GL_FRAMEBUFFER, id);
     }
-    
+
     void unbind()
     {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
-    
+
     void attach(GLuint texId, GLenum attachment = GL_COLOR_ATTACHMENT0, GLenum target = GL_TEXTURE_2D)
     {
         glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, target, texId, 0);
@@ -40,7 +40,6 @@ public:
     }
 
 protected:
-    
     GLuint id;
 };
 
@@ -64,12 +63,12 @@ public:
     {
         glDeleteTextures(1, &texId);
     }
-    
+
     void bind()
     {
         glBindTexture(GL_TEXTURE_2D, texId);
     }
-    
+
     void unbind()
     {
         glBindTexture(GL_TEXTURE_2D, 0);
@@ -79,13 +78,12 @@ public:
     {
         return texId;
     }
-    
+
 protected:
-    
     GLuint texId;
 };
 
-int gauze_main(int argc, char **argv)
+int gauze_main(int argc, char** argv)
 {
     try
     {
@@ -93,14 +91,16 @@ int gauze_main(int argc, char **argv)
         auto code = RUN_ALL_TESTS();
         return code;
     }
-    catch(...) {}
+    catch (...)
+    {
+    }
     return -1; // return non-zero
 }
 
 #ifdef ANDROID
-#  define TEXTURE_FORMAT GL_RGBA
+#define TEXTURE_FORMAT GL_RGBA
 #else
-#  define TEXTURE_FORMAT GL_BGRA
+#define TEXTURE_FORMAT GL_BGRA
 #endif
 
 #include <vector>
@@ -112,12 +112,12 @@ using image_rgba_t = std::vector<rgba_t>;
 static image_rgba_t make_test_image(int rows, int cols)
 {
     image_rgba_t image(rows * cols);
-    for(int y = 0; y < rows; y++)
+    for (int y = 0; y < rows; y++)
     {
-        for(int x = 0; x < cols; x++)
+        for (int x = 0; x < cols; x++)
         {
-            std::uint8_t value = y%255;
-            image[y*cols+x] = {{value, value, value, 255}};
+            std::uint8_t value = y % 255;
+            image[y * cols + x] = { { value, value, value, 255 } };
         }
     }
     return image;
@@ -126,7 +126,7 @@ static image_rgba_t make_test_image(int rows, int cols)
 static void check_gl_error()
 {
     auto e = glGetError();
-    if(e != GL_NO_ERROR)
+    if (e != GL_NO_ERROR)
     {
         std::stringstream ss;
         ss << "OpenGL error: " << int(e);
@@ -134,16 +134,16 @@ static void check_gl_error()
     }
 }
 
-TEST(gauze, hello)
+TEST(aglet, gpu2cpu)
 {
     const int width = 640;
     const int height = 480;
     auto gl = aglet::GLContext::create(aglet::GLContext::kAuto, {}, width, height);
     check_gl_error();
-    
+
     (*gl)();
     check_gl_error();
-    
+
     ASSERT_TRUE(gl);
 
     glActiveTexture(GL_TEXTURE0);
@@ -153,20 +153,20 @@ TEST(gauze, hello)
 
     GLFrameBufferObject fbo;
     check_gl_error();
-    
+
     GLTexture texture(width, height, TEXTURE_FORMAT, image0.data()->data());
     check_gl_error();
-    
+
     fbo.bind();
     check_gl_error();
-    
+
     fbo.attach(texture);
     check_gl_error();
-    
+
     image_rgba_t image1(image0.size());
-    glPixelStorei(GL_UNPACK_ALIGNMENT,1);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, image1.data()->data());
     check_gl_error();
-    
-    ASSERT_TRUE( std::equal(image0.begin(), image0.end(), image1.begin()) );
+
+    ASSERT_TRUE(std::equal(image0.begin(), image0.end(), image1.begin()));
 }

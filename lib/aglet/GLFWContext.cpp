@@ -8,6 +8,7 @@
 */
 
 #include "aglet/GLFWContext.h"
+#include "aglet/aglet_assert.h"
 
 #include <map>
 #include <mutex>
@@ -16,6 +17,11 @@
 #include <assert.h>
 
 AGLET_BEGIN
+
+static void GLFWContextError(int code, const char* text)
+{
+    throw_assert(code != 0, text);
+}
 
 struct GLFWContextPool
 {
@@ -29,16 +35,18 @@ struct GLFWContextPool
             if (!glfwInit())
             {
                 glfwTerminate();
-                throw std::runtime_error("glfwInit()");
+                throw_assert(false, "glfwInit()");
             }
         }
+
+        glfwSetErrorCallback(GLFWContextError);
 
         src->alloc(name, width, height);
         auto* context = src->getContext();
         if (!context)
         {
             glfwTerminate();
-            throw std::runtime_error("glfwCreateWindow()");
+            throw_assert(context, "getContext()");
         }
 
         pool[context] = src;
@@ -83,7 +91,7 @@ void GLFWContext::alloc(const std::string& name, int width, int height)
     if (!m_context)
     {
         glfwTerminate();
-        throw std::runtime_error("glfwCreateWindow()");
+        throw_assert(m_context, "glfwCreateWindow()");
     }
     m_geometry.width = width;
     m_geometry.height = height;
@@ -91,6 +99,7 @@ void GLFWContext::alloc(const std::string& name, int width, int height)
     glfwSetFramebufferSizeCallback(m_context, framebuffer_size_callback);
     glfwMakeContextCurrent(m_context);
     glfwGetFramebufferSize(m_context, &width, &height);
+
     framebufferSizeCallback(width, height);
 
     if (!name.empty())
@@ -125,7 +134,7 @@ GLFWContext::operator bool() const
     return (m_context != nullptr);
 }
 
-void GLFWContext::getCursor(double &x, double &y)
+void GLFWContext::getCursor(double& x, double& y)
 {
     glfwGetCursorPos(m_context, &x, &y);
 }
@@ -144,13 +153,13 @@ static void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
     auto* context = glfwPool[window];
     assert(context);
-    if(context->cursorCallback)
+    if (context->cursorCallback)
     {
         context->cursorCallback(xpos, ypos);
     }
 }
 
-void GLFWContext::setCursorCallback(const CursorDelegate &delegate)
+void GLFWContext::setCursorCallback(const CursorDelegate& delegate)
 {
     cursorCallback = delegate;
     glfwSetCursorPosCallback(m_context, mouse_callback);
@@ -175,7 +184,7 @@ void GLFWContext::operator()(std::function<bool(void)>& f)
     bool okay = true;
     while (!glfwWindowShouldClose(m_context) && okay)
     {
-        if(m_wait)
+        if (m_wait)
         {
             glfwWaitEvents();
         }

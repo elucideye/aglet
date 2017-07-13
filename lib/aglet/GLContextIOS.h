@@ -23,7 +23,7 @@ public:
     ~GLContextIOS();
 
     virtual operator bool() const;
-    virtual void operator()() {} // make current
+    virtual void operator()(); // make current
 
     virtual bool hasDisplay() const;
     virtual void resize(int width, int height);
