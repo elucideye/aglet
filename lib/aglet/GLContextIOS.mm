@@ -25,9 +25,13 @@ std::unique_ptr<Value> make_unique(Arguments&&... arguments_for_constructor)
 
 struct GLContextIOS::Impl
 {
-    Impl()
+    Impl(int /*width*/, int /*height*/,  GLContext::GLVersion version)
     {
-        egl = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
+        switch(version)
+        {
+            case kGLES20: egl = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2]; break;
+            case kGLES30: egl = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3]; break;
+        }
         throw_assert(egl, "EAGLContexfft initWithAPI");
 
         auto status = [EAGLContext setCurrentContext:egl];
@@ -43,9 +47,9 @@ struct GLContextIOS::Impl
     EAGLContext *egl = nullptr;
 };
 
-GLContextIOS::GLContextIOS()
+GLContextIOS::GLContextIOS(int width, int height, GLVersion version)
 {
-    impl = make_unique<Impl>();
+    impl = make_unique<Impl>(width, height, version);
 }
 
 GLContextIOS::~GLContextIOS()

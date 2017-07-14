@@ -24,7 +24,7 @@
 
 AGLET_BEGIN
 
-auto GLContext::create(ContextKind kind, const std::string& name, int width, int height) -> GLContextPtr
+auto GLContext::create(ContextKind kind, const std::string& name, int width, int height, GLVersion version) -> GLContextPtr
 {
     switch (kind)
     {
@@ -32,12 +32,12 @@ auto GLContext::create(ContextKind kind, const std::string& name, int width, int
 
 #if defined(AGLET_IOS)
         case kIOS:
-            return std::make_shared<aglet::GLContextIOS>();
+            return std::make_shared<aglet::GLContextIOS>(width, height, version);
 #endif
 
 #if defined(AGLET_ANDROID)
         case kAndroid:
-            return std::make_shared<aglet::GLContextAndroid>();
+            return std::make_shared<aglet::GLContextAndroid>(width, height, version);
 #endif
 
 #if defined(AGLET_HAS_GLFW)
