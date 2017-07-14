@@ -25,7 +25,7 @@ AGLET_BEGIN
 
 struct GLContextAndroid : public GLContext
 {
-    GLContextAndroid(int width = 640, int height = 480);
+    GLContextAndroid(int width = 640, int height = 480, GLVersion kVersion = kGLES20);
     ~GLContextAndroid();
 
     virtual operator bool() const;

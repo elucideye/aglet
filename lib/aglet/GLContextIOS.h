@@ -19,7 +19,8 @@ AGLET_BEGIN
 class GLContextIOS : public GLContext
 {
 public:
-    GLContextIOS();
+    
+    GLContextIOS(int width = 640, int height = 480, GLVersion version = kGLES20);
     ~GLContextIOS();
 
     virtual operator bool() const;

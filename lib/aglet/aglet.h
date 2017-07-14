@@ -28,18 +28,33 @@
 #elif __APPLE__
 #  include "TargetConditionals.h"
 #  if (TARGET_OS_IPHONE && TARGET_IPHONE_SIMULATOR) || TARGET_OS_IPHONE
-#    include <OpenGLES/ES2/gl.h>
-#    include <OpenGLES/ES2/glext.h>
+#    if defined(AGLET_OPENGL_ES3)
+#      include <OpenGLES/ES3/gl.h>
+#      include <OpenGLES/ES3/glext.h>
+#    else
+#      include <OpenGLES/ES2/gl.h>
+#      include <OpenGLES/ES2/glext.h>
+#    endif
 #    define AGLET_IOS 1
 #  else
-#    include <OpenGL/gl.h>
+#    if defined(AGLET_OPENGL_ES3)
+#      include <OpenGL/gl3.h>
+#      include <OpenGL/gl3ext.h>
+#    else
+#      include <OpenGL/gl.h>
+#      include <OpenGL/glext.h>
+#    endif
 #    include <OpenGL/glu.h>
-#    include <OpenGL/glext.h>
 #    define AGLET_OSX 1
 #  endif
 #elif defined(__ANDROID__) || defined(ANDROID)
-#  include <GLES2/gl2.h>
-#  include <GLES2/gl2ext.h>
+#  if defined(AGLET_OPENGL_ES3)
+#    include <GLES3/gl3.h>
+#    include <GLES3/gl3ext.h>
+#  else
+#    include <GLES2/gl2.h>
+#    include <GLES2/gl2ext.h>
+#  endif
 #  define AGLET_ANDROID 1
 #elif defined(__linux__) || defined(__unix__) || defined(__posix__)
 #  define GL_GLEXT_PROTOTYPES 1

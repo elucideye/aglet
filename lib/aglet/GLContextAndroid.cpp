@@ -14,7 +14,7 @@
 
 AGLET_BEGIN
 
-GLContextAndroid::GLContextAndroid(int width, int height)
+GLContextAndroid::GLContextAndroid(int width, int height, GLVersion /*kVersion*/)
 {
     // EGL config attributes
     const EGLint confAttr[] = {

@@ -86,7 +86,7 @@ void GLFWContext::alloc(const std::string& name, int width, int height)
     {
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
     }
-
+    
     m_context = glfwCreateWindow(width, height, name.c_str(), nullptr, nullptr);
     if (!m_context)
     {

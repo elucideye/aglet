@@ -34,6 +34,12 @@ public:
         kCount
     };
 
+    enum GLVersion
+    {
+        kGLES20,
+        kGLES30
+    };
+
     struct Geometry
     {
         int width = 0;
@@ -69,7 +75,12 @@ public:
     CursorDelegate cursorCallback;
 
     // Create context (w/ window if name is specified):
-    static GLContextPtr create(ContextKind kind, const std::string& name = {}, int width = 640, int height = 480);
+    static GLContextPtr create(
+        ContextKind kind,
+        const std::string& name = {},
+        int width = 640,
+        int height = 480,
+        GLVersion version = kGLES20);
 };
 
 AGLET_END

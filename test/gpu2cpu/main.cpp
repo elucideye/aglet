@@ -134,7 +134,7 @@ static void check_gl_error()
     }
 }
 
-TEST(aglet, gpu2cpu)
+TEST(aglet, glReadPixels)
 {
     const int width = 640;
     const int height = 480;
@@ -170,3 +170,86 @@ TEST(aglet, gpu2cpu)
 
     ASSERT_TRUE(std::equal(image0.begin(), image0.end(), image1.begin()));
 }
+
+#if defined(AGLET_OPENGL_ES3)
+TEST(aglet, pbo)
+{
+    const int width = 16;//640;
+    const int height = 16;//480;
+    auto gl = aglet::GLContext::create(aglet::GLContext::kAuto, {}, width, height, aglet::GLContext::kGLES30);
+    check_gl_error();
+    
+    (*gl)();
+    check_gl_error();
+    
+    ASSERT_TRUE(gl);
+
+    glActiveTexture(GL_TEXTURE0);
+    check_gl_error();
+
+    image_rgba_t image0 = make_test_image(height, width);
+
+    GLFrameBufferObject fbo;
+    check_gl_error();
+    
+    GLTexture texture(width, height, TEXTURE_FORMAT, image0.data()->data());
+    check_gl_error();
+    
+    fbo.bind();
+    check_gl_error();
+    
+    fbo.attach(texture);
+    check_gl_error();
+
+    // ===== PBO =====
+
+    image_rgba_t image1(image0.size());
+
+    size_t pbo_size = image0.size() * 4;
+    GLuint pbo_id;
+    
+    // ::::::: allocate ::::::::::
+    glGenBuffers(1, &pbo_id);
+    check_gl_error();
+    
+    glBindBuffer(GL_PIXEL_PACK_BUFFER, pbo_id);
+    check_gl_error();
+    
+    glBufferData(GL_PIXEL_PACK_BUFFER, pbo_size, 0, GL_DYNAMIC_READ);
+    check_gl_error();
+    
+    glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+    check_gl_error();
+
+    // ::::::::: read ::::::::::::
+  
+    glBindBuffer(GL_PIXEL_PACK_BUFFER, pbo_id);
+    check_gl_error();
+    
+    glReadBuffer(GL_COLOR_ATTACHMENT0);
+    check_gl_error();
+
+    // Note glReadPixels last argument == 0 for PBO reads
+    glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, 0); // GL_BGRA
+    check_gl_error();
+    
+#if defined(AGLET_OSX)
+    // TODO: glMapBufferRange does not seem to work in OS X
+    GLubyte *ptr = static_cast<GLubyte *>(glMapBuffer(GL_PIXEL_PACK_BUFFER, GL_READ_ONLY));
+#else
+    GLubyte *ptr = static_cast<GLubyte *>(glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, pbo_size, GL_MAP_READ_BIT));
+#endif
+
+    check_gl_error();
+    
+    memcpy(image1.data()->data(), ptr, pbo_size);
+    
+    glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
+    check_gl_error();
+    
+    glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+    check_gl_error();                
+        
+    ASSERT_TRUE( std::equal(image0.begin(), image0.end(), image1.begin()) );
+}
+#endif

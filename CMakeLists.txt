@@ -9,8 +9,10 @@ HunterGate(
 project(aglet VERSION 0.1)
 
 option(AGLET_BUILD_TESTS "Build tests" OFF)
+option(AGLET_OPENGL_ES3 "Use OpenGL ES 3.0" OFF) # default 2.0
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/modules")
 
 set(AGLET_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_LIST_DIR}/lib")
 
