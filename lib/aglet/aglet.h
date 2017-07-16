@@ -23,7 +23,6 @@
 #  include <windows.h> // CMakeLists.txt defines NOMINMAX
 #  include <gl/glew.h>
 #  include <GL/gl.h>
-#  include <GL/glu.h>
 #  define AGLET_MSVC 1
 #elif __APPLE__
 #  include "TargetConditionals.h"
@@ -44,7 +43,6 @@
 #      include <OpenGL/gl.h>
 #      include <OpenGL/glext.h>
 #    endif
-#    include <OpenGL/glu.h>
 #    define AGLET_OSX 1
 #  endif
 #elif defined(__ANDROID__) || defined(ANDROID)
@@ -59,7 +57,6 @@
 #elif defined(__linux__) || defined(__unix__) || defined(__posix__)
 #  define GL_GLEXT_PROTOTYPES 1
 #  include <GL/gl.h>
-#  include <GL/glu.h>
 #  include <GL/glext.h>
 #  define AGLET_LINUX 1
 #else
