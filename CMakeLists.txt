@@ -6,7 +6,7 @@ HunterGate(
     SHA1 "73b5a5253b75d5ed79c89242c167ca1f94386621"
 )
 
-project(aglet VERSION 0.1)
+project(aglet VERSION 0.2)
 
 option(AGLET_BUILD_TESTS "Build tests" OFF)
 option(AGLET_OPENGL_ES3 "Use OpenGL ES 3.0" OFF) # default 2.0
