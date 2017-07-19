@@ -1,12 +1,13 @@
-cmake_minimum_required(VERSION 3.3) # IN_LIST
+cmake_minimum_required(VERSION 3.3)
 
 include("cmake/HunterGate.cmake")
+
 HunterGate(
-    URL "https://github.com/ruslo/hunter/archive/v0.19.10.tar.gz"
-    SHA1 "73b5a5253b75d5ed79c89242c167ca1f94386621"
+  URL "https://github.com/ruslo/hunter/archive/v0.19.35.tar.gz"
+  SHA1 "bacf59b6856e37964c8eb298a57e0f6ef37e56d6"
 )
 
-project(aglet VERSION 0.2)
+project(aglet VERSION 1.1.0)
 
 option(AGLET_BUILD_TESTS "Build tests" OFF)
 option(AGLET_OPENGL_ES3 "Use OpenGL ES 3.0" OFF) # default 2.0
