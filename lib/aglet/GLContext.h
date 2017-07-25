@@ -30,7 +30,7 @@ public:
         kAuto,    // Select most portable context available:
         kGLFW,    // GLFW based (no mobile support)
         kIOS,     // iOS EAGLContext
-        kAndroid, // Android EGL context
+        kEGL,     // EGL context
         kCount
     };
 
