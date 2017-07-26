@@ -94,10 +94,11 @@ script:
     --ios-multiarch --ios-combined    
     --fwd HUNTER_CONFIGURATION_TYPES=${CONFIG}
     HUNTER_USE_CACHE_SERVERS=YES
-    --discard 10
-    --tail 100
+    HUNTER_SUPPRESS_LIST_OF_FILES=ON
+    GAUZE_ANDROID_USE_EMULATOR=YES
     --jobs 2
     --install
+    --test
 
 # https://docs.travis-ci.com/user/customizing-the-build/#Whitelisting-or-blacklisting-branches
 branches:

@@ -1,5 +1,5 @@
 /*!
-  @file   GLContextAndroid
+  @file   EGLContext
   @author David Hirvonen
   @brief  Declaration of minimal "hidden" OpenGL context for Android.
 
@@ -7,8 +7,8 @@
 
 */
 
-#ifndef __aglet_GLContextAndroid_h__
-#define __aglet_GLContextAndroid_h__
+#ifndef __aglet_EGLContext_h__
+#define __aglet_EGLContext_h__
 
 #include "aglet/GLContext.h"
 
@@ -23,10 +23,11 @@
 
 AGLET_BEGIN
 
-struct GLContextAndroid : public GLContext
+// NOTE: EGLContext is already a type!
+struct EGLContextImpl : public GLContext
 {
-    GLContextAndroid(int width = 640, int height = 480, GLVersion kVersion = kGLES20);
-    ~GLContextAndroid();
+    EGLContextImpl(int width = 640, int height = 480, GLVersion kVersion = kGLES20);
+    ~EGLContextImpl();
 
     virtual operator bool() const;
     virtual void operator()();
@@ -43,4 +44,4 @@ struct GLContextAndroid : public GLContext
 
 AGLET_END
 
-#endif // __aglet_GLContextAndroid_h__
+#endif // __aglet_EGLContext_h__

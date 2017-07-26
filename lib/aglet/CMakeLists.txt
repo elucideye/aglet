@@ -8,18 +8,21 @@ set(aglet_srcs
   )
 
 if(ANDROID)
-  find_package(Android REQUIRED)
-  find_package(Log REQUIRED)
-  find_package(EGL REQUIRED)
+
+  find_package(android REQUIRED)
+  find_package(android_log REQUIRED)
+  find_package(egl REQUIRED)
+
   if(AGLET_OPENGL_ES3)
-    find_package(OpenGLES3 REQUIRED)
-    set(aglet_opengl_lib GLESv3)
+    find_package(gles3 REQUIRED)
+    set(aglet_opengl_lib gles3::gles3)
   else()
-    find_package(OpenGLES2 REQUIRED)
-    set(aglet_opengl_lib GLESv2)
+    find_package(gles2 REQUIRED)
+    set(aglet_opengl_lib gles2::gles2)
   endif()
-  list(APPEND aglet_libs log android EGL ${aglet_opengl_lib})
-  list(APPEND aglet_srcs GLContextAndroid.cpp GLContextAndroid.h)
+  
+  list(APPEND aglet_libs android_log::android_log android::android egl::egl ${aglet_opengl_lib})
+  list(APPEND aglet_srcs EGLContext.cpp EGLContext.h)
   list(APPEND aglet_defs AGLET_ANDROID=1)
 endif()
 

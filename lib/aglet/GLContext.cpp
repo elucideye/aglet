@@ -16,7 +16,7 @@
 
 // clang-format off
 #if defined(AGLET_ANDROID)
-#  include "aglet/GLContextAndroid.h"
+#  include "aglet/EGLContext.h"
 #endif
 // clang-format on
 
@@ -36,8 +36,8 @@ auto GLContext::create(ContextKind kind, const std::string& name, int width, int
 #endif
 
 #if defined(AGLET_ANDROID)
-        case kAndroid:
-            return std::make_shared<aglet::GLContextAndroid>(width, height, version);
+        case kEGL:
+            return std::make_shared<aglet::EGLContextImpl>(width, height, version);
 #endif
 
 #if defined(AGLET_HAS_GLFW)

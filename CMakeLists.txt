@@ -3,17 +3,16 @@ cmake_minimum_required(VERSION 3.3)
 include("cmake/HunterGate.cmake")
 
 HunterGate(
-  URL "https://github.com/ruslo/hunter/archive/v0.19.35.tar.gz"
-  SHA1 "bacf59b6856e37964c8eb298a57e0f6ef37e56d6"
+  URL "https://github.com/ruslo/hunter/archive/v0.19.44.tar.gz"
+  SHA1 "a68f92d1370d738ff058ec1d36a02cf4cdc34af6"
 )
 
-project(aglet VERSION 1.1.0)
+project(aglet VERSION 1.2.0)
 
 option(AGLET_BUILD_TESTS "Build tests" OFF)
 option(AGLET_OPENGL_ES3 "Use OpenGL ES 3.0" OFF) # default 2.0
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/modules")
 
 set(AGLET_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_LIST_DIR}/lib")
 
@@ -25,12 +24,21 @@ endif()
 
 add_subdirectory(lib/aglet)
 
+string(COMPARE EQUAL "$ENV{TRAVIS}" "true" travis_ci)
+string(COMPARE EQUAL "$ENV{APPVEYOR}" "True" appveyor_ci)
+if(travis_ci OR appveyor_ci)
+  set(AGLET_CI TRUE)
+else()
+  set(AGLET_CI FALSE)
+endif()
+
 if(AGLET_BUILD_TESTS)
 
   hunter_add_package(gauze)
   find_package(gauze CONFIG REQUIRED)
-  
-  if("$ENV{TRAVIS}" STREQUAL "true" AND IOS)
+
+  # We can run CI tests w/ Android Emulator
+  if(${AGLET_CI} AND NOT ANDROID)
     # Do not run tests (just build)
   else()
     enable_testing()
