@@ -20,7 +20,7 @@ if(ANDROID)
     find_package(gles2 REQUIRED)
     set(aglet_opengl_lib gles2::gles2)
   endif()
-  
+
   list(APPEND aglet_libs android_log::android_log android::android egl::egl ${aglet_opengl_lib})
   list(APPEND aglet_srcs EGLContext.cpp EGLContext.h)
   list(APPEND aglet_defs AGLET_ANDROID=1)
@@ -28,18 +28,20 @@ endif()
 
 if(IOS)
   list(APPEND aglet_srcs GLContextIOS.mm GLContextIOS.h)
-  list(APPEND aglet_defs AGLET_IOS=1)  
-  list(APPEND aglet_libs
-    "-framework OpenGLES"
-    "-framework Foundation"
-    )
+  list(APPEND aglet_defs AGLET_IOS=1)
+
+  find_package(opengles REQUIRED)
+  list(APPEND aglet_libs opengles::opengles)
+
+  find_package(foundation REQUIRED)
+  list(APPEND aglet_libs foundation::foundation)
 endif()
 
 if(MSVC)
   # ogles_gpgpu/platform/opengl/gl_includes.h: #include <gl/glew.h>
   hunter_add_package(glew)
   find_package(glew CONFIG REQUIRED)
-  
+
   list(APPEND aglet_libs glew::glew)
   list(APPEND aglet_defs PUBLIC NOMINMAX) # avoid std::{min,max} conflicts
   list(APPEND aglet_defs PUBLIC _USE_MATH_DEFINES) # M_PI, etc
@@ -48,9 +50,9 @@ endif()
 if(NOT ${AGLET_IS_MOBILE})
   hunter_add_package(glfw)
   find_package(glfw3 REQUIRED)
-  
+
   list(APPEND aglet_srcs GLFWContext.cpp GLFWContext.h)
-  list(APPEND aglet_defs AGLET_HAS_GLFW=1)    
+  list(APPEND aglet_defs AGLET_HAS_GLFW=1)
   list(APPEND aglet_libs glfw)
 endif()
 

@@ -1,13 +1,11 @@
 @PACKAGE_INIT@
 
-include(CMakeFindDependencyMacro)
-
 if (NOT @AGLET_IS_MOBILE@)
-  find_dependency(glfw3)
+  find_package(glfw3 REQUIRED)
 endif()
 
 if (@MSVC@)
-  find_dependency(glew)
+  find_package(glew CONFIG REQUIRED)
 elseif(@ANDROID@)
   find_package(android REQUIRED)
   find_package(android_log REQUIRED)
@@ -17,8 +15,9 @@ elseif(@ANDROID@)
   else()
     find_package(gles2 REQUIRED)
   endif()
-elseif(@APPLE@)
-  # IOS and OSX are using frameworks
+elseif(@IOS@)
+  find_package(opengles REQUIRED)
+  find_package(foundation REQUIRED)
 else()
 
 endif()
