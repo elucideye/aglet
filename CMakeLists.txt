@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 3.3)
 include("cmake/HunterGate.cmake")
 
 HunterGate(
-  URL "https://github.com/ruslo/hunter/archive/v0.19.44.tar.gz"
-  SHA1 "a68f92d1370d738ff058ec1d36a02cf4cdc34af6"
+  URL "https://github.com/ruslo/hunter/archive/v0.19.51.tar.gz"
+  SHA1 "d238dc1dd4db83e45a592f96fdb95d17c688600a"
 )
 
 project(aglet VERSION 1.2.0)
