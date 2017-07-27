@@ -7,7 +7,20 @@ if (NOT @AGLET_IS_MOBILE@)
 endif()
 
 if (@MSVC@)
-  find_dependency(glew CONFIG)
+  find_dependency(glew)
+elseif(@ANDROID@)
+  find_package(android REQUIRED)
+  find_package(android_log REQUIRED)
+  find_package(egl REQUIRED)
+  if(@AGLET_OPENGL_ES3@)
+    find_package(gles3 REQUIRED)
+  else()
+    find_package(gles2 REQUIRED)
+  endif()
+elseif(@APPLE@)
+  # IOS and OSX are using frameworks
+else()
+
 endif()
 
 include("${CMAKE_CURRENT_LIST_DIR}/@TARGETS_EXPORT_NAME@.cmake")
