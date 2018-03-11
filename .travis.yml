@@ -19,6 +19,9 @@ addons:
       - enchant # for documentation
       - mesa-utils # install glxinfo (needed for Android emulator)
 
+      # pip3
+      - python3-pip
+
 matrix:
   include:
     # Linux {
@@ -43,13 +46,17 @@ matrix:
     - os: osx
       env: CONFIG=Release TOOLCHAIN=libcxx
     - os: osx
-      env: CONFIG=Debug TOOLCHAIN=osx-10-11
+      osx_image: xcode8.3
+      env: CONFIG=Debug TOOLCHAIN=osx-10-12-hid-sections
     - os: osx
-      env: CONFIG=Release TOOLCHAIN=osx-10-11
+      osx_image: xcode8.3
+      env: CONFIG=Release TOOLCHAIN=osx-10-12-hid-sections
     - os: osx
-      env: CONFIG=Debug TOOLCHAIN=ios-nocodesign-9-3
+      osx_image: xcode8.3
+      env: CONFIG=Debug TOOLCHAIN=ios-nocodesign-10-3-arm64-dep-9-0-device-libcxx-hid-sections
     - os: osx
-      env: CONFIG=Release TOOLCHAIN=ios-nocodesign-9-3
+      osx_image: xcode8.3
+      env: CONFIG=Release TOOLCHAIN=ios-nocodesign-10-3-arm64-dep-9-0-device-libcxx-hid-sections
     - os: osx
       env: CONFIG=Debug TOOLCHAIN=android-ndk-r10e-api-19-armeabi-v7a-neon
     - os: osx
