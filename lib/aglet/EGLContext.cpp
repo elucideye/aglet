@@ -10,15 +10,34 @@
 #include "aglet/EGLContext.h"
 #include "aglet/aglet_assert.h"
 
+#include <EGL/eglext.h>
+
 #include <iostream>
+
+// https://stackoverflow.com/a/47914093 (missing in older ndk releases)
+//#if __has_include <android/ndk-version.h>
+//#  include <android/ndk-version.h>
+//#  define AGLET_HAS_ES3 (__NDK_MAJOR__ > 16)
+//#endif
 
 AGLET_BEGIN
 
-EGLContextImpl::EGLContextImpl(int width, int height, GLVersion /*kVersion*/)
+EGLContextImpl::EGLContextImpl(int width, int height, GLVersion kVersion)
 {
+    EGLint eglOpenglBit = EGL_OPENGL_ES2_BIT, eglContextClientVersion = 2;
+    if(kVersion == kGLES30)
+    {
+#if defined(EGL_OPENGL_ES3_BIT_KHR)
+        eglOpenglBit = EGL_OPENGL_ES3_BIT_KHR;
+        eglContextClientVersion = 3;
+#else
+        throw_assert(false, "EGLContextImpl::EGLContextImpl() : EGL_OPENGL_ES3_BIT_KHR is unavailable");
+#endif
+    }
+
     // EGL config attributes
     const EGLint confAttr[] = {
-        EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT, // very important! (ES3 is not defined)
+        EGL_RENDERABLE_TYPE, eglOpenglBit,
         EGL_SURFACE_TYPE, EGL_PBUFFER_BIT, // we will create a pixelbuffer surface
         EGL_RED_SIZE, 8,
         EGL_GREEN_SIZE, 8,
@@ -30,7 +49,7 @@ EGLContextImpl::EGLContextImpl(int width, int height, GLVersion /*kVersion*/)
 
     // EGL context attributes
     const EGLint ctxAttr[] = {
-        EGL_CONTEXT_CLIENT_VERSION, 2, // very important!
+        EGL_CONTEXT_CLIENT_VERSION, eglContextClientVersion, // very important!
         EGL_NONE
     };
 
