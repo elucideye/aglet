@@ -98,6 +98,11 @@ void GLFWContext::alloc(const std::string& name, int width, int height)
 
     glfwSetFramebufferSizeCallback(m_context, framebuffer_size_callback);
     glfwMakeContextCurrent(m_context);
+
+#if defined(AGLET_HAS_GLEW)
+    throw_assert(!glewInit(), "glewInit()")
+#endif
+
     glfwGetFramebufferSize(m_context, &width, &height);
 
     framebufferSizeCallback(width, height);
