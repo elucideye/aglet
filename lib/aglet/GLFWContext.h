@@ -16,6 +16,7 @@
 #if defined(_WIN32) || defined(_WIN64)
 #  include <windows.h> // CMakeLists.txt defines NOMINMAX
 #  include <gl/glew.h>
+#  define AGLET_HAS_GLEW 1
 #endif
 // clang-format on
 
