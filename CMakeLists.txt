@@ -3,11 +3,11 @@ cmake_minimum_required(VERSION 3.3)
 include("cmake/HunterGate.cmake")
 
 HunterGate(
-    URL "https://github.com/ruslo/hunter/archive/v0.21.9.tar.gz"
-    SHA1 "0056188988906abb63a06c6f1aaef01832c62b74"
+    URL "https://github.com/ruslo/hunter/archive/v0.23.146.tar.gz"
+    SHA1 "06f44e121e5ac61c8571203ba47ce0b31187d985"
 )
 
-project(aglet VERSION 1.2.2)
+project(aglet VERSION 1.3.0)
 
 hunter_add_package(check_ci_tag)
 find_package(check_ci_tag CONFIG REQUIRED)
@@ -15,6 +15,9 @@ check_ci_tag()
 
 option(AGLET_BUILD_TESTS "Build tests" OFF)
 option(AGLET_OPENGL_ES3 "Use OpenGL ES 3.0" OFF) # default 2.0
+
+# https://devblogs.nvidia.com/egl-eye-opengl-visualization-without-x-server/
+option(AGLET_USE_EGL "Use EGL instead of GLFW for desktop system" OFF)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 

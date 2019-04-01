@@ -12,8 +12,6 @@
 
 #include <EGL/eglext.h>
 
-#include <iostream>
-
 // https://stackoverflow.com/a/47914093 (missing in older ndk releases)
 //#if __has_include <android/ndk-version.h>
 //#  include <android/ndk-version.h>

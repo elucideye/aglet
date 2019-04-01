@@ -23,7 +23,7 @@ if(ANDROID)
 
   list(APPEND aglet_libs android_log::android_log android::android egl::egl ${aglet_opengl_lib})
   list(APPEND aglet_srcs EGLContext.cpp EGLContext.h)
-  list(APPEND aglet_defs AGLET_ANDROID=1)
+  list(APPEND aglet_defs AGLET_ANDROID=1 AGLET_EGL=1)
 endif()
 
 if(IOS)
@@ -48,12 +48,24 @@ if(MSVC)
 endif()
 
 if(NOT ${AGLET_IS_MOBILE})
-  hunter_add_package(glfw)
-  find_package(glfw3 REQUIRED)
 
-  list(APPEND aglet_srcs GLFWContext.cpp GLFWContext.h)
-  list(APPEND aglet_defs AGLET_HAS_GLFW=1)
-  list(APPEND aglet_libs glfw)
+  if(AGLET_USE_EGL)
+
+    find_package(OpenGL REQUIRED)
+    find_package(egl REQUIRED)
+
+    list(APPEND aglet_libs EGL OpenGL)
+    list(APPEND aglet_srcs EGLContext.cpp EGLContext.h)
+    list(APPEND aglet_defs AGLET_EGL=1)
+  else()
+    hunter_add_package(glfw)
+    find_package(glfw3 REQUIRED)
+
+    list(APPEND aglet_srcs GLFWContext.cpp GLFWContext.h)
+    list(APPEND aglet_defs AGLET_HAS_GLFW=1)
+    list(APPEND aglet_libs glfw)
+  endif()
+
 endif()
 
 if(AGLET_OPENGL_ES3)
