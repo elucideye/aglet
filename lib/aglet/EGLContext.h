@@ -13,13 +13,6 @@
 #include "aglet/GLContext.h"
 
 #include <EGL/egl.h>
-#include <android/log.h>
-#include <android/window.h>
-#include <dlfcn.h>
-#include <errno.h>
-#include <math.h>
-#include <stdlib.h>
-#include <stdio.h>
 
 AGLET_BEGIN
 
