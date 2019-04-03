@@ -10,6 +10,16 @@
 #define TEXTURE_FORMAT GL_BGRA
 #endif
 
+#if defined(AGLET_IOS) || defined(AGLET_ANDROID)
+#if defined(AGLET_OPENGL_ES3)
+static const auto glKind = aglet::GLContext::kGLES30;
+#else
+static const auto glKind = aglet::GLContext::kGLES20;
+#endif
+#else
+static const auto glKind = aglet::GLContext::kGL;
+#endif
+
 static void check_gl_error()
 {
     auto e = glGetError();
@@ -440,12 +450,11 @@ TEST(aglet, glReadPixels)
 {
     const int width = 640;
     const int height = 480;
-    auto gl = aglet::GLContext::create(aglet::GLContext::kAuto, {}, width, height);
-    check_gl_error();
 
+    auto gl = aglet::GLContext::create(aglet::GLContext::kAuto, {}, width, height, glKind);
+    check_gl_error();
     (*gl)();
     check_gl_error();
-
     ASSERT_TRUE(gl);
 
     glActiveTexture(GL_TEXTURE0);
@@ -461,6 +470,260 @@ TEST(aglet, glReadPixels)
     texture.read(image1.data()->data());
 
     ASSERT_TRUE(std::equal(image0.begin(), image0.end(), image1.begin()));
+}
+
+#define AGLET_TO_STR_(x) #x
+#define AGLET_TO_STR(x) AGLET_TO_STR_(x)
+#define AGLET_LOGINF(class_tag, fmt, ...)
+#define AGLET_LOGERR(class_tag, fmt, ...)                                                                                   \
+    do                                                                                                                      \
+    {                                                                                                                       \
+        fprintf(stderr, "ogles_gpgpu::%s - %s:%d:%s(): " fmt "\n", class_tag, __FILE__, __LINE__, __func__, ##__VA_ARGS__); \
+    } while (0)
+
+// Real-world shader test from here:
+// https://github.com/hunter-packages/ogles_gpgpu/blob/hunter/ogles_gpgpu/common/proc/rgb2luv.cpp
+
+// clang-format off
+const char* vshaderRgb2LuvSrc = AGLET_TO_STR(
+  attribute vec4 aPos;
+  attribute vec2 aTexCoord;
+  varying vec2 vTexCoord;
+  void main() {
+    gl_Position = aPos;
+    vTexCoord = aTexCoord;
+  });
+
+const char* fshaderRgb2LuvSrc = 
+#if defined(OGLES_GPGPU_OPENGLES)
+AGLET_TO_STR(precision highp float;)
+#endif
+AGLET_TO_STR(
+  varying vec2 vTexCoord;
+  uniform sampler2D uInputTex;
+
+  const mat3 RGBtoXYZ = mat3(0.430574, 0.341550, 0.178325, 0.222015, 0.706655, 0.071330, 0.020183, 0.129553, 0.93918);
+
+  const float y0 = 0.00885645167; // pow(6.0/29.0, 3.0)
+  const float a = 903.296296296;  // pow(29.0/3.0, 3.0);
+  const float un = 0.197833;
+  const float vn = 0.468331;
+  const float maxi = 0.0037037037;  // 1.0/270.0;
+  const float minu = -88.0 * maxi;
+  const float minv = -134.0 * maxi;
+  const vec3 k = vec3(1.0, 15.0, 3.0);
+  const vec3 RGBtoGray = vec3(0.2125, 0.7154, 0.0721);
+
+  void main()
+  {
+      vec3 rgb = texture2D(uInputTex, vTexCoord).rgb;
+      vec3 xyz = (rgb * RGBtoXYZ);
+      float z = 1.0/(dot(xyz,k) + 1e-35);
+
+      vec3 luv;
+      float y = xyz.y;
+      float l = ((y > y0) ? ((116.0 * pow(y, 0.3333333333)) - 16.0) : (y*a)) * maxi;
+      luv.x = l;
+      luv.y = l * ((52.0 * xyz.x * z) - (13.0*un)) - minu;
+      luv.z = l * ((117.0 * xyz.y * z) - (13.0*vn)) - minv;
+
+      gl_FragColor = vec4(vec3(luv.xyz), dot(rgb, RGBtoGray));
+  }
+);
+// clang-format on
+
+// Shader compiler inlined here for test purposes
+// Source:
+// https://github.com/hunter-packages/ogles_gpgpu/blob/hunter/ogles_gpgpu/common/gl/shader.cpp
+
+typedef enum
+{
+    ATTR,
+    UNIF
+} ShaderParamType;
+
+/** 
+ * Shader helper class for creating and managing an OpenGL shader.
+ */
+class Shader
+{
+public:
+    typedef std::pair<int, const char*> Attribute;
+    typedef std::vector<Attribute> Attributes;
+
+    /**
+     * Constructor.
+     */
+    Shader()
+    {
+        programId = 0;
+    }
+
+    /**
+     * Deconstructor.
+     */
+    ~Shader()
+    {
+        if (programId > 0)
+        {
+            AGLET_LOGINF("Shader", "deleting shader program");
+            glDeleteProgram(programId);
+        }
+    }
+
+    /**
+     * Build an OpenGL shader object from vertex and fragment shader source code
+     * <vshSrc> and <fshSrc>.
+     */
+    bool buildFromSrc(const char* vshSrc, const char* fshSrc, const std::vector<Attribute>& attributes = {})
+    {
+        programId = create(vshSrc, fshSrc, &vshId, &fshId, attributes);
+        return (programId > 0);
+    }
+
+    /**
+     * Use the shader program.
+     */
+    void use()
+    {
+        glUseProgram(programId);
+    }
+
+    /**
+     * Get a shader parameter position for a parameter of type <type> and with
+     * <name>.
+     */
+    GLint getParam(ShaderParamType type, const char* name) const
+    {
+
+        // get position according to type and name
+        GLint id = (type == ATTR) ? glGetAttribLocation(programId, name) : glGetUniformLocation(programId, name);
+
+        if (id < 0)
+        {
+            AGLET_LOGERR("Shader", "could not get parameter id for param %s", name);
+        }
+
+        return id;
+    }
+
+    /**
+     * Get a shader parameter position for a parameter of type <type> and with
+     * <name>.
+     */
+    GLuint getProgramId()
+    {
+        return programId;
+    }
+
+private:
+    /**
+     * Create a shader program from sources <vshSrc> and <fshSrc>. Save shader ids in
+     * <vshId> and <fshId>.
+     */
+    GLuint create(const char* vshSrc, const char* fshSrc, GLuint* vshId, GLuint* fshId, const Attributes& attributes = {})
+    {
+        *vshId = compile(GL_VERTEX_SHADER, vshSrc);
+        *fshId = compile(GL_FRAGMENT_SHADER, fshSrc);
+
+        // create shader program
+        GLuint programId = glCreateProgram();
+
+        if (programId == 0)
+        {
+            AGLET_LOGERR("Shader", "could not create shader program");
+            return 0;
+        }
+
+        glAttachShader(programId, *vshId); // add the vertex shader to program
+        glAttachShader(programId, *fshId); // add the fragment shader to program
+
+        // Bind attribute locations
+        // this needs to be done prior to linking
+        for (int i = 0; i < attributes.size(); i++)
+        {
+            glBindAttribLocation(programId, attributes[i].first, attributes[i].second);
+        }
+
+        glLinkProgram(programId); // link both shaders to a full program
+
+        // check link status
+        GLint linkStatus;
+        glGetProgramiv(programId, GL_LINK_STATUS, &linkStatus);
+        if (linkStatus != GL_TRUE)
+        {
+            AGLET_LOGERR("Shader", "could not link shader program. error log:");
+            GLchar infoLogBuf[1024];
+            GLsizei infoLogLen;
+            glGetProgramInfoLog(programId, 1024, &infoLogLen, infoLogBuf);
+            std::cerr << infoLogBuf << std::endl
+                      << std::endl;
+
+            glDeleteProgram(programId);
+
+            return 0;
+        }
+
+        return programId;
+    }
+
+    /**
+     * Compile a shader of type <type> and source <src> and return its id.
+     */
+    static GLuint compile(GLenum type, const char* src);
+
+    GLuint programId; // full shader program id
+    GLuint vshId;     // vertex shader id
+    GLuint fshId;     // fragment shader id
+};
+
+GLuint Shader::compile(GLenum type, const char* src)
+{
+
+    // create a shader
+    GLuint shId = glCreateShader(type);
+    if (shId == 0)
+    {
+        AGLET_LOGERR("Shader", "could not create shader");
+        return 0;
+    }
+    // set shader source
+    glShaderSource(shId, 1, (const GLchar**)&src, NULL);
+    // compile the shader
+    glCompileShader(shId);
+    // check compile status
+    GLint compileStatus;
+    glGetShaderiv(shId, GL_COMPILE_STATUS, &compileStatus);
+    if (compileStatus != GL_TRUE)
+    {
+        AGLET_LOGERR("Shader", "could not compile shader program. error log:");
+        GLchar infoLogBuf[1024];
+        GLsizei infoLogLen;
+        glGetShaderInfoLog(shId, 1024, &infoLogLen, infoLogBuf);
+        std::cerr << infoLogBuf << std::endl
+                  << std::endl;
+        AGLET_LOGERR("Shader", "could not compile shader program. shader source:");
+        std::cerr << src << std::endl
+                  << std::endl;
+
+        glDeleteShader(shId);
+        return 0;
+    }
+    return shId;
+}
+
+TEST(aglet, glShader)
+{
+    const int width = 640;
+    const int height = 480;
+    auto gl = aglet::GLContext::create(aglet::GLContext::kAuto, {}, width, height, glKind);
+    check_gl_error();
+    (*gl)();
+    check_gl_error();
+    ASSERT_TRUE(gl);
+    Shader shader;
+    auto value = shader.buildFromSrc(vshaderRgb2LuvSrc, fshaderRgb2LuvSrc);
+    ASSERT_TRUE(value);
 }
 
 #if defined(AGLET_OPENGL_ES3)

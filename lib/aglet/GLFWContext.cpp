@@ -32,13 +32,13 @@ struct GLFWContextPool
         std::unique_lock<decltype(mutex)> lock(mutex);
         if (pool.empty())
         {
-            if (!glfwInit())
-            {
-                glfwTerminate();
-                throw_assert(false, "glfwInit()");
-            }
+	    if (!glfwInit())
+	    {
+	        glfwTerminate();
+		throw_assert(false, "glfwInit()");
+	    }
         }
-
+	
         glfwSetErrorCallback(GLFWContextError);
 
         src->alloc(name, width, height);
@@ -57,9 +57,10 @@ struct GLFWContextPool
         std::unique_lock<decltype(mutex)> lock(mutex);
         auto iter = pool.find(context->getContext());
         assert(iter != pool.end());
+        glfwDestroyWindow(iter->first);
         pool.erase(iter);
         if (pool.empty())
-        {
+	{
             glfwTerminate();
         }
     }

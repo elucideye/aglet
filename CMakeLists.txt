@@ -5,9 +5,10 @@ include("cmake/HunterGate.cmake")
 HunterGate(
     URL "https://github.com/ruslo/hunter/archive/v0.23.146.tar.gz"
     SHA1 "06f44e121e5ac61c8571203ba47ce0b31187d985"
+    LOCAL
 )
 
-project(aglet VERSION 1.3.0)
+project(aglet VERSION 1.3.1)
 
 hunter_add_package(check_ci_tag)
 find_package(check_ci_tag CONFIG REQUIRED)
