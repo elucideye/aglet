@@ -12,25 +12,34 @@
 
 #include <EGL/eglext.h>
 
-// https://stackoverflow.com/a/47914093 (missing in older ndk releases)
-//#if __has_include <android/ndk-version.h>
-//#  include <android/ndk-version.h>
-//#  define AGLET_HAS_ES3 (__NDK_MAJOR__ > 16)
-//#endif
-
 AGLET_BEGIN
 
 EGLContextImpl::EGLContextImpl(int width, int height, GLVersion kVersion)
 {
     EGLint eglOpenglBit = EGL_OPENGL_ES2_BIT, eglContextClientVersion = 2;
-    if(kVersion == kGLES30)
+    EGLenum eglApi = EGL_OPENGL_ES_API;
+
+    switch(kVersion)
     {
+        case kGL:
+	  eglApi = EGL_OPENGL_API;
+	  eglOpenglBit = EGL_OPENGL_BIT;
+	  eglContextClientVersion = 2;
+	  break;
+        case kGLES20:
+	  eglApi = EGL_OPENGL_ES_API;
+	  eglOpenglBit = EGL_OPENGL_ES2_BIT;
+	  eglContextClientVersion = 2;
+	  break;
+        case kGLES30:
 #if defined(EGL_OPENGL_ES3_BIT_KHR)
-        eglOpenglBit = EGL_OPENGL_ES3_BIT_KHR;
-        eglContextClientVersion = 3;
+	  eglApi = EGL_OPENGL_ES_API;
+	  eglOpenglBit = EGL_OPENGL_ES3_BIT_KHR;
+	  eglContextClientVersion = 3;
 #else
-        throw_assert(false, "EGLContextImpl::EGLContextImpl() : EGL_OPENGL_ES3_BIT_KHR is unavailable");
+	  throw_assert(false, "EGLContextImpl::EGLContextImpl() : EGL_OPENGL_ES3_BIT_KHR is unavailable");
 #endif
+	  break;
     }
 
     // EGL config attributes
@@ -75,6 +84,9 @@ EGLContextImpl::EGLContextImpl(int width, int height, GLVersion kVersion)
     eglSurface = eglCreatePbufferSurface(eglDisp, eglConf, surfaceAttr);
     throw_assert((eglGetError() == EGL_SUCCESS), "EGLContextImpl::EGLContextImpl() : eglCreatePbufferSurface()");
     throw_assert((eglSurface != EGL_NO_SURFACE), "EGLContextImpl::EGLContextImpl() : eglCreatePbufferSurface()");
+
+    eglBindAPI(eglApi);
+    throw_assert((EGL_SUCCESS == eglGetError()), "EGLContextImpl::EGLContextImpl() : eglCreateContext()");
 
     eglCtx = eglCreateContext(eglDisp, eglConf, EGL_NO_CONTEXT, ctxAttr);
     throw_assert((EGL_SUCCESS == eglGetError()), "EGLContextImpl::EGLContextImpl() : eglCreateContext()");

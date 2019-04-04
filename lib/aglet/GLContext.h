@@ -36,6 +36,7 @@ public:
 
     enum GLVersion
     {
+        kGL,
         kGLES20,
         kGLES30
     };
