@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-#ifdef ANDROID
+#if defined(AGLET_ANDROID) || defined(AGLET_LINUX)
 #define TEXTURE_FORMAT GL_RGBA
 #else
 #define TEXTURE_FORMAT GL_BGRA

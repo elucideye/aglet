@@ -56,8 +56,16 @@
 #  define AGLET_ANDROID 1
 #elif defined(__linux__) || defined(__unix__) || defined(__posix__)
 #  define GL_GLEXT_PROTOTYPES 1
-#  include <GL/gl.h>
-#  include <GL/glext.h>
+#  if defined(AGLET_OPENGL_ES2)
+#    include <GLES2/gl2.h>
+#    include <GLES2/gl2ext.h>
+#  elif defined(AGLET_OPENGL_ES3)
+#    include <GLES3/gl3.h>
+#    include <GLES3/gl3ext.h>
+#  else
+#    include <GL/gl.h>
+#    include <GL/glext.h>
+#  endif
 #  define AGLET_LINUX 1
 #else
 #  error platform not supported.
