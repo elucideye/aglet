@@ -9,6 +9,7 @@
 
 #include "aglet/EGLContext.h"
 #include "aglet/aglet_assert.h"
+#include "aglet/gl_includes.h"
 
 #include <EGL/eglext.h>
 

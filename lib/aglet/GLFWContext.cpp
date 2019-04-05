@@ -9,6 +9,7 @@
 
 #include "aglet/GLFWContext.h"
 #include "aglet/aglet_assert.h"
+#include "aglet/gl_includes.h"
 
 #include <map>
 #include <mutex>
