@@ -8,7 +8,7 @@ HunterGate(
     LOCAL
 )
 
-project(aglet VERSION 1.3.2)
+project(aglet VERSION 1.3.3)
 
 hunter_add_package(check_ci_tag)
 find_package(check_ci_tag CONFIG REQUIRED)
