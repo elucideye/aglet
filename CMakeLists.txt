@@ -8,14 +8,23 @@ HunterGate(
     LOCAL
 )
 
-project(aglet VERSION 1.3.1)
+project(aglet VERSION 1.3.2)
 
 hunter_add_package(check_ci_tag)
 find_package(check_ci_tag CONFIG REQUIRED)
 check_ci_tag()
 
+if(IOS OR ANDROID)
+  set(aglet_opengl_es2_dflt ON)
+  set(aglet_opengl_es3_dflt OFF)
+else()
+  set(aglet_opengl_es2_dflt OFF)
+  set(aglet_opengl_es3_dflt OFF)
+endif()
+
 option(AGLET_BUILD_TESTS "Build tests" OFF)
-option(AGLET_OPENGL_ES3 "Use OpenGL ES 3.0" OFF) # default 2.0
+option(AGLET_OPENGL_ES2 "Use OpenGL ES 2.0" ${aglet_opengl_es2_dflt})
+option(AGLET_OPENGL_ES3 "Use OpenGL ES 3.0" ${aglet_opengl_es3_dflt})
 
 # https://devblogs.nvidia.com/egl-eye-opengl-visualization-without-x-server/
 option(AGLET_USE_EGL "Use EGL instead of GLFW for desktop system" OFF)

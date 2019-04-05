@@ -9,10 +9,6 @@ set(aglet_srcs
 
 if(ANDROID)
 
-  find_package(android REQUIRED)
-  find_package(android_log REQUIRED)
-  find_package(egl REQUIRED)
-
   if(AGLET_OPENGL_ES3)
     find_package(gles3 REQUIRED)
     set(aglet_opengl_lib gles3::gles3)
@@ -20,6 +16,10 @@ if(ANDROID)
     find_package(gles2 REQUIRED)
     set(aglet_opengl_lib gles2::gles2)
   endif()
+
+  find_package(android REQUIRED)
+  find_package(android_log REQUIRED)
+  find_package(egl REQUIRED)
 
   list(APPEND aglet_libs android_log::android_log android::android egl::egl ${aglet_opengl_lib})
   list(APPEND aglet_srcs EGLContext.cpp EGLContext.h)
@@ -51,10 +51,20 @@ if(NOT ${AGLET_IS_MOBILE})
 
   if(AGLET_USE_EGL)
 
-    find_package(OpenGL REQUIRED)
+    if(AGLET_OPENGL_ES2)
+      find_package(gles2 REQUIRED)
+      set(aglet_opengl_lib gles2::gles2)
+    elseif(AGLET_OPENGL_ES3)
+      find_package(gles3 REQUIRED)
+      set(aglet_opengl_lib gles3::gles3)
+    else()
+      find_package(OpenGL REQUIRED)
+      set(aglet_opengl_lib OpenGL)
+    endif()
+
     find_package(egl REQUIRED)
 
-    list(APPEND aglet_libs EGL OpenGL)
+    list(APPEND aglet_libs EGL ${aglet_opengl_lib})
     list(APPEND aglet_srcs EGLContext.cpp EGLContext.h)
     list(APPEND aglet_defs AGLET_EGL=1)
   else()
@@ -68,7 +78,9 @@ if(NOT ${AGLET_IS_MOBILE})
 
 endif()
 
-if(AGLET_OPENGL_ES3)
+if(AGLET_OPENGL_ES2)
+  list(APPEND aglet_defs AGLET_OPENGL_ES2=1) # PUBLIC
+elseif(AGLET_OPENGL_ES3)
   list(APPEND aglet_defs AGLET_OPENGL_ES3=1) # PUBLIC
 endif()
 
