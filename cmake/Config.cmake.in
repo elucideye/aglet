@@ -2,6 +2,16 @@
 
 if (NOT @AGLET_IS_MOBILE@)
   find_package(glfw3 REQUIRED)
+  if(@AGLET_USE_EGL@)
+    find_package(egl REQUIRED)
+  endif()
+  if(@AGLET_OPENGL_ES2@)
+    find_package(gles2 REQUIRED)
+  elseif(@AGLET_OPENGL_ES3@)
+    find_package(gles3 REQUIRED)
+  else()
+    find_package(OpenGL REQUIRED)
+  endif()
 endif()
 
 if (@MSVC@)

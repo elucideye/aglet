@@ -9,6 +9,7 @@
 
 #include "aglet/GLContextIOS.h"
 #include "aglet/aglet_assert.h"
+#include "aglet/gl_includes.h"
 
 #import <UIKit/UIKit.h>
 

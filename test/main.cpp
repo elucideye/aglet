@@ -1,5 +1,5 @@
 #include <aglet/GLContext.h>
-
+#include "aglet/gl_includes.h"
 #include <gtest/gtest.h>
 
 #include <iostream>
