@@ -1,10 +1,13 @@
 @PACKAGE_INIT@
 
 if (NOT @AGLET_IS_MOBILE@)
-  find_package(glfw3 REQUIRED)
+
   if(@AGLET_USE_EGL@)
     find_package(egl REQUIRED)
+  else()
+    find_package(glfw3 REQUIRED)
   endif()
+
   if(@AGLET_OPENGL_ES2@)
     find_package(gles2 REQUIRED)
   elseif(@AGLET_OPENGL_ES3@)
