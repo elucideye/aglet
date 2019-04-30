@@ -10,12 +10,14 @@
 #define TEXTURE_FORMAT GL_BGRA
 #endif
 
-#if defined(AGLET_IOS) || defined(AGLET_ANDROID)
-#if defined(AGLET_OPENGL_ES3)
-static const auto glKind = aglet::GLContext::kGLES30;
-#else
-static const auto glKind = aglet::GLContext::kGLES20;
+#if defined(AGLET_OPENGL_ES2) || defined(AGLET_OPENGL_ES3)
+#  define AGLET_OPENGLES
 #endif
+
+#if defined(AGLET_OPENGL_ES2)
+static const auto glKind = aglet::GLContext::kGLES20;
+#elif defined(AGLET_OPENGL_ES3)
+static const auto glKind = aglet::GLContext::kGLES30;
 #else
 static const auto glKind = aglet::GLContext::kGL;
 #endif
@@ -63,6 +65,7 @@ public:
         glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, target, texId, 0);
         check_gl_error();
         GLenum fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+
         check_gl_error();
         if (fboStatus != GL_FRAMEBUFFER_COMPLETE)
         {
@@ -460,13 +463,19 @@ TEST(aglet, glReadPixels)
     glActiveTexture(GL_TEXTURE0);
     check_gl_error();
 
+    (*gl)();
+
     image_rgba_t image0 = make_test_image(height, width);
     image_rgba_t image1(image0.size());
 
     GLFrameBufferObject fbo;
     GLTexture texture(width, height, TEXTURE_FORMAT, image0.data()->data());
+    check_gl_error();
     fbo.bind();
+    check_gl_error();
+
     fbo.attach(texture);
+    check_gl_error();
     texture.read(image1.data()->data());
 
     ASSERT_TRUE(std::equal(image0.begin(), image0.end(), image1.begin()));
@@ -495,7 +504,7 @@ const char* vshaderRgb2LuvSrc = AGLET_TO_STR(
   });
 
 const char* fshaderRgb2LuvSrc = 
-#if defined(OGLES_GPGPU_OPENGLES)
+#if defined(AGLET_OPENGLES)
 AGLET_TO_STR(precision highp float;)
 #endif
 AGLET_TO_STR(
