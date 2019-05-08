@@ -64,7 +64,7 @@ if(NOT ${AGLET_IS_MOBILE})
 
     find_package(egl REQUIRED)
 
-    list(APPEND aglet_libs EGL ${aglet_opengl_lib})
+    list(APPEND aglet_libs egl::egl ${aglet_opengl_lib})
     list(APPEND aglet_srcs EGLContext.cpp EGLContext.h)
     list(APPEND aglet_defs AGLET_EGL=1)
   else()
